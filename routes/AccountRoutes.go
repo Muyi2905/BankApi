@@ -2,10 +2,10 @@ package routes
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/muyi2905/controllers" // Adjust this import to your actual path
+	"github.com/muyi2905/controllers"
 )
 
-func AccountRoute() *mux.Router {
+func AccountRoutes() *mux.Router {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/account", controllers.CreateAccount).Methods("POST")
