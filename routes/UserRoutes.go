@@ -7,10 +7,10 @@ import (
 
 func UserRoutes() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/user", controllers.GetUser).Methods("GET")
-	r.HandleFunc("/user/{id}", controllers.GetUserById).Methods("GET")
-	r.HandleFunc("/user/{id}", controllers.DeleteUser).Methods("DELETE")
-	r.HandleFunc("/user", controllers.CreateUser).Methods("POST")
-	r.HandleFunc("/user/{id}", controllers.UpdateUser).Methods("PUT")
+	r.HandleFunc("", controllers.GetUser).Methods("GET")
+	r.HandleFunc("/{id}", controllers.GetUserById).Methods("GET")
+	r.HandleFunc("/{id}", controllers.DeleteUser).Methods("DELETE")
+	r.HandleFunc("", controllers.CreateUser).Methods("POST")
+	r.HandleFunc("/{id}", controllers.UpdateUser).Methods("PUT")
 	return r
 }

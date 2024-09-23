@@ -8,11 +8,11 @@ import (
 func AccountRoutes() *mux.Router {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/account", controllers.CreateAccount).Methods("POST")
-	r.HandleFunc("/account", controllers.GetAccounts).Methods("GET")
-	r.HandleFunc("/account/{id}", controllers.GetAccountById).Methods("GET")
-	r.HandleFunc("/account/{id}", controllers.UpdateAccount).Methods("PUT")
-	r.HandleFunc("/account/{id}", controllers.DeleteAccount).Methods("DELETE")
+	r.HandleFunc("", controllers.CreateAccount).Methods("POST")
+	r.HandleFunc("", controllers.GetAccounts).Methods("GET")
+	r.HandleFunc("/{id}", controllers.GetAccountById).Methods("GET")
+	r.HandleFunc("/{id}", controllers.UpdateAccount).Methods("PUT")
+	r.HandleFunc("/{id}", controllers.DeleteAccount).Methods("DELETE")
 
 	return r
 }
