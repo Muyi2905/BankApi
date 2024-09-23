@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/muyi2905/models"
+	"github.com/muyi2905/routes"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -27,8 +28,9 @@ func InitDb() {
 
 func main() {
 	InitDb()
+	r := routes.RegisterRoutes()
 	DB.AutoMigrate(&models.Account{}, &models.User{})
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", r))
 
 }
