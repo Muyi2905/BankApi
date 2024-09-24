@@ -2,17 +2,22 @@ package routes
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/muyi2905/controllers"
 	"gorm.io/gorm"
 )
 
 func RegisterRoutes(db *gorm.DB) *mux.Router {
 	r := mux.NewRouter()
 
-	apiRouter := r.PathPrefix("/api").Subrouter()
-	UserRoutes := UserRoutes(db)
-	AccountRoutes := AccountRoutes()
-	apiRouter.PathPrefix("/user").Handler(UserRoutes)
-	apiRouter.PathPrefix("/account").Handler(AccountRoutes)
+	// Directly map the route
+	r.HandleFunc("/api/user", controllers.CreateUser(db)).Methods("POST")
+
+	// For now, comment out other routes
+	// apiRouter := r.PathPrefix("/api").Subrouter()
+	// userRoutes := UserRoutes(db)
+	// accountRoutes := AccountRoutes()
+	// apiRouter.PathPrefix("/user").Handler(userRoutes)
+	// apiRouter.PathPrefix("/account").Handler(accountRoutes)
 
 	return r
 }
