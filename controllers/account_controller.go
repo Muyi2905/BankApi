@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/muyi2905/models"
 	"gorm.io/gorm"
 )
@@ -36,4 +37,32 @@ func GetAccounts(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(&accounts); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func GetAccountById(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var account models.Account
+	if result := db.First(&account, "id=?", id); result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			http.Error(w, "account not found", http.StatusNotFound)
+		} else {
+			http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+	w.Header().Set("Content-Type", "encoding/json")
+	if err := json.NewEncoder(w).Encode(&account); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func UpdateAccount(w http.ResponseWriter, r*http.Request)  {
+	w.Header().Set("Content-Type", "application/json")
+	vars:= mux.Vars(r)
+	id:= vars["id"]
+
+	var account models.Account
+	if result:= db.First()
 }
