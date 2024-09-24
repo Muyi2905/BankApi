@@ -80,3 +80,24 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 
 }
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "encoding/json")
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var user models.User
+	if result := db.First(&user, "id=?", id); result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			http.Error(w, "user not found", http.StatusNotFound)
+		} else {
+			http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+		}
+	}
+
+	if result := db.Delete(&user); result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
