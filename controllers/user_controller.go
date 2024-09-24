@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/muyi2905/models"
-	"gorm.io/gorm"
 )
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -33,4 +32,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	if details := db.Create(&user); details.Error != nil {
 		http.Error(w, details.Error.Error(), http.StatusInternalServerError)
 	}
+}
+
+func GetUserById(w http.ResponseWriter, r *http.Request) {
+
 }
