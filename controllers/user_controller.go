@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/muyi2905/models"
+	"gorm.io/gorm"
 )
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -36,5 +37,46 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
-	var
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var user models.User
+	if details := db.Find(&user, "id=?", id); details.Error != nil {
+		if details.Error == gorm.ErrRecordNotFound {
+			http.Error(w, "user not found", http.StatusNotFound)
+		} else {
+			http.Error(w, details.Error.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+	w.Header().Set("Content-Type", "encoding/json")
+	json.NewEncoder(w).Encode(user)
+
+}
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var user models.User
+	if details := db.Find(&user, "id=?", id); details.Error != nil {
+		if details.Error == gorm.ErrRecordNotFound {
+			http.Error(w, "user not found", http.StatusNotFound)
+		} else {
+			http.Error(w, details.Error.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	var UpdatedUser models.User
+	if err := json.NewDecoder(r.Body).Decode(&UpdatedUser); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if details := db.Save(&user); details.Error != nil {
+		http.Error(w, "Error saving updated information", http.StatusInternalServerError)
+	}
+	json.NewEncoder(w).Encode(user)
+
 }
