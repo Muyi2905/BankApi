@@ -10,7 +10,7 @@ import (
 )
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "encoding/json")
+	w.Header().Set("Content-Type", "application/json")
 	var user []models.User
 
 	if details := db.Find(&user); details.Error != nil {
@@ -24,7 +24,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "encoding/json")
+	w.Header().Set("Content-Type", "application/json")
 
 	var user models.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
@@ -49,7 +49,7 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	w.Header().Set("Content-Type", "encoding/json")
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
 
 }

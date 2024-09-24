@@ -11,31 +11,25 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
-func InitDb() {
-
+func InitDb() *gorm.DB {
 	dsn := "postgresql://BACKEND_owner:BV1eyMtC5sRr@ep-proud-voice-a5uhfcga.us-east-2.aws.neon.tech/BACKEND?sslmode=require"
-	var err error
-
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
-		return
 	}
-
 	fmt.Println("Database connection successful")
+	return db
 }
 
 func main() {
+	db := InitDb()
 
-	InitDb()
-
-	if err := DB.AutoMigrate(&models.User{}, &models.Account{}); err != nil {
+	if err := db.AutoMigrate(&models.User{}, &models.Account{}); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 
-	r := routes.RegisterRoutes()
+	r := routes.RegisterRoutes(db)
 
+	log.Println("Server starting on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
