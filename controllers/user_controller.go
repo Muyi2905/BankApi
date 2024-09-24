@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/muyi2905/models"
 )
 
@@ -35,5 +36,5 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
-
+	var
 }
