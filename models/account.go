@@ -7,6 +7,6 @@ import (
 type Account struct {
 	gorm.Model
 
-	UserId         string  `json:"userid"`
-	AccountBalance float64 `json:"accountbalance"`
+	UserID         uint    `json:"userId"`
+	AccountBalance float64 `json:"accountBalance"`
 }
