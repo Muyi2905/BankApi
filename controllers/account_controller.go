@@ -8,12 +8,14 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+var db *gorm.DB
 
 func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "encoding/json")
 	var account models.Account
-	json.NewDecoder(r.Body).Decode(&account)
-	if err!=
+	err := json.NewDecoder(r.Body).Decode(&account)
+	if err != nil {
+		http.Error(w, "invalid request", http.StatusBadRequest)
+	}
 
 }
