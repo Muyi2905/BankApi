@@ -29,10 +29,11 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 func GetAccounts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "encoding/json")
 	var accounts []models.Account
-	results := db.Find(&accounts); results.Error!= nil{
+	if results := db.Find(&accounts); results.Error != nil {
 		http.Error(w, results.Error.Error(), http.StatusInternalServerError)
-		return 
 	}
-	json.NewEncoder(w).Encode(&accounts)
 
+	if err := json.NewEncoder(w).Encode(&accounts); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
