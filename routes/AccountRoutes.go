@@ -3,7 +3,6 @@ package routes
 import (
 	"github.com/gorilla/mux"
 	"github.com/muyi2905/controllers"
-	"gorm.io/gorm"
 )
 
 func AccountRoutes() *mux.Router {

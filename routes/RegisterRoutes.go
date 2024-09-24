@@ -10,7 +10,7 @@ func RegisterRoutes(db *gorm.DB) *mux.Router {
 
 	apiRouter := r.PathPrefix("/api").Subrouter()
 	UserRoutes := UserRoutes(db)
-	AccountRoutes := AccountRoutes(db)
+	AccountRoutes := AccountRoutes()
 	apiRouter.PathPrefix("/user").Handler(UserRoutes)
 	apiRouter.PathPrefix("/account").Handler(AccountRoutes)
 
