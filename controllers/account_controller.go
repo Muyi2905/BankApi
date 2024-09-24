@@ -82,5 +82,22 @@ func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteAccount(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "encoding/json")
+	vars := mux.Vars(r)
+	id := vars["id"]
 
+	var account models.Account
+	if result := db.First(&account, "id=?", id); result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			http.Error(w, "Account not found", http.StatusNotFound)
+		} else {
+			http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+		}
+	}
+
+	if result := db.Delete(&account); result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
