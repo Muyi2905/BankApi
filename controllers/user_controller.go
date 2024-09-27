@@ -9,95 +9,126 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var user []models.User
+func GetUser(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		var users []models.User
 
-	if details := db.Find(&user); details.Error != nil {
-		http.Error(w, details.Error.Error(), http.StatusInternalServerError)
-	}
-
-	if err := json.NewEncoder(w).Encode(&user); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-}
-
-func CreateUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	var user models.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		http.Error(w, "invalid request", http.StatusBadRequest)
-	}
-
-	if details := db.Create(&user); details.Error != nil {
-		http.Error(w, details.Error.Error(), http.StatusInternalServerError)
-	}
-}
-
-func GetUserById(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	var user models.User
-	if details := db.Find(&user, "id=?", id); details.Error != nil {
-		if details.Error == gorm.ErrRecordNotFound {
-			http.Error(w, "user not found", http.StatusNotFound)
-		} else {
-			http.Error(w, details.Error.Error(), http.StatusInternalServerError)
-		}
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
-
-}
-
-func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	var user models.User
-	if details := db.Find(&user, "id=?", id); details.Error != nil {
-		if details.Error == gorm.ErrRecordNotFound {
-			http.Error(w, "user not found", http.StatusNotFound)
-		} else {
-			http.Error(w, details.Error.Error(), http.StatusInternalServerError)
-		}
-		return
-	}
-
-	var UpdatedUser models.User
-	if err := json.NewDecoder(r.Body).Decode(&UpdatedUser); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if details := db.Save(&user); details.Error != nil {
-		http.Error(w, "Error saving updated information", http.StatusInternalServerError)
-	}
-	json.NewEncoder(w).Encode(user)
-
-}
-
-func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "encoding/json")
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	var user models.User
-	if result := db.First(&user, "id=?", id); result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
-			http.Error(w, "user not found", http.StatusNotFound)
-		} else {
+		if result := db.Find(&users); result.Error != nil {
 			http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err := json.NewEncoder(w).Encode(users); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
+}
 
-	if result := db.Delete(&user); result.Error != nil {
-		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+func CreateUser(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		var user models.User
+
+		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+
+		if result := db.Create(&user); result.Error != nil {
+			http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		if err := json.NewEncoder(w).Encode(user); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}
+}
 
-	w.WriteHeader(http.StatusOK)
+func GetUserById(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id := vars["id"]
+
+		var user models.User
+
+		if result := db.First(&user, "id = ?", id); result.Error != nil {
+			if result.Error == gorm.ErrRecordNotFound {
+				http.Error(w, "User not found", http.StatusNotFound)
+			} else {
+				http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+			}
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(user); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}
+}
+
+func UpdateUser(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id := vars["id"]
+
+		var user models.User
+
+		if result := db.First(&user, "id = ?", id); result.Error != nil {
+			if result.Error == gorm.ErrRecordNotFound {
+				http.Error(w, "User not found", http.StatusNotFound)
+			} else {
+				http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+			}
+			return
+		}
+
+		var updatedUser models.User
+		if err := json.NewDecoder(r.Body).Decode(&updatedUser); err != nil {
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+
+		user.AccountNumber = updatedUser.AccountNumber
+		user.PhoneNo = updatedUser.PhoneNo
+		if result := db.Save(&user); result.Error != nil {
+			http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(user); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}
+}
+
+func DeleteUser(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id := vars["id"]
+
+		var user models.User
+
+		if result := db.First(&user, "id = ?", id); result.Error != nil {
+			if result.Error == gorm.ErrRecordNotFound {
+				http.Error(w, "User not found", http.StatusNotFound)
+			} else {
+				http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+			}
+			return
+		}
+
+		if result := db.Delete(&user); result.Error != nil {
+			http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("User deleted successfully"))
+	}
 }

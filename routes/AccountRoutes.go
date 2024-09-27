@@ -6,8 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func AccountRoutes(db *gorm.DB) *mux.Router {
-	r := mux.NewRouter()
+func AccountRoutes(db *gorm.DB, r *mux.Router) {
 
 	r.HandleFunc("", controllers.CreateAccount(db)).Methods("POST")
 	r.HandleFunc("", controllers.GetAccounts(db)).Methods("GET")
@@ -15,5 +14,4 @@ func AccountRoutes(db *gorm.DB) *mux.Router {
 	r.HandleFunc("/{id}", controllers.UpdateAccount(db)).Methods("PUT")
 	r.HandleFunc("/{id}", controllers.DeleteAccount(db)).Methods("DELETE")
 
-	return r
 }
