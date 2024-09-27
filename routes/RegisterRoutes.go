@@ -9,12 +9,10 @@ import (
 func RegisterRoutes(db *gorm.DB) *mux.Router {
 	r := mux.NewRouter()
 
-	
 	apiRouter := r.PathPrefix("/api").Subrouter()
 
-	
-	apiRouter.Path("/user").Handler(UserRoutes(db))   
-	apiRouter.Path("/account").Handler(AccountRoutes())
+	(UserRoutes(db, apiRouter))
+	(AccountRoutes())
 
 	return r
 }
