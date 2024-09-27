@@ -8,10 +8,12 @@ import (
 
 func UserRoutes(db *gorm.DB, r *mux.Router) {
 
-	r.HandleFunc("/", controllers.CreateUser(db)).Methods("POST")
-	r.HandleFunc("", controllers.GetUser(db)).Methods("GET")
-	r.HandleFunc("/{id}", controllers.GetUserById(db)).Methods("GET")
-	r.HandleFunc("/{id}", controllers.UpdateUser(db)).Methods("PUT")
-	r.HandleFunc("/{id}", controllers.DeleteUser(db)).Methods("DELETE")
+	userRouter := r.PathPrefix("/user").Subrouter()
+
+	userRouter.HandleFunc("/", controllers.CreateUser(db)).Methods("POST")
+	userRouter.HandleFunc("", controllers.GetUser(db)).Methods("GET")
+	userRouter.HandleFunc("/{id}", controllers.GetUserById(db)).Methods("GET")
+	userRouter.HandleFunc("/{id}", controllers.UpdateUser(db)).Methods("PUT")
+	userRouter.HandleFunc("/{id}", controllers.DeleteUser(db)).Methods("DELETE")
 
 }
